@@ -74,15 +74,11 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
       <div style={{ background: "rgba(250,244,232,0.88)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: "2px solid #3d2b1f" }}>
         <div className="max-w-6xl mx-auto px-3 sm:px-5 py-3 flex items-center justify-between gap-3">
           <a href="#top" className="flex items-center gap-3 group">
-            <span className="relative flex items-center h-[52px] px-2.5 shrink-0 transition-transform group-hover:-rotate-2"
+            <span className="relative flex items-center h-[60px] px-3 shrink-0 transition-transform group-hover:-rotate-2"
               style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)", border: "2px solid #3d2b1f", borderRadius: "1rem", boxShadow: "3px 3px 0 #3d2b1f" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-10 w-auto" />
+              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-12 w-auto" />
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px]" style={{ background: "#f0d48a", border: "2px solid #3d2b1f", borderRadius: "999px" }}>★</span>
-            </span>
-            <span>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[0.22em]" style={{ color: "#b3402a" }}>Mompox · Bolívar · Caribe</span>
-              <span className="font-display font-black text-[20px] leading-none" style={{ color: "#4a0f1a" }}>Tienda oficial 🍷</span>
             </span>
           </a>
           <nav className="hidden lg:flex items-center gap-1 text-[13px] font-extrabold">
