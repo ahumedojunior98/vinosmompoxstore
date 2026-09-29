@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Pagos: Mercado Pago Checkout Pro (activo) · PayU LATAM (reserva)
+
+* Método en línea actual: **Mercado Pago** (`MP_ENV`, `MP_ACCESS_TOKEN`,
+  `MP_WEBHOOK_SECRET`, `NEXT_PUBLIC_MP_PUBLIC_KEY`).
+* Nombres de variables: `.env.example` (sin secretos).
+* Arquitectura, despliegue, reconciliación y checklist:
+  `docs/mercadopago-checkout-pro.md` (PayU: `docs/payu-latam-produccion.md`).
+* Tests sin red: `pnpm test` (PayU 20 casos + MP: entorno, estados, firma HMAC).
+
 ## Getting Started
 
 First, run the development server:

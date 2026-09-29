@@ -5,11 +5,16 @@ export const metadata = {
   description:
     "Vinos artesanales de Corozo, Mango, Mamón, Ciruela y Maracuyá, fermentados en Santa Cruz de Mompox, Bolívar. Pide por la tienda y recibe a domicilio.",
   keywords: ["vino de corozo", "vino mompox", "vino artesanal", "mompox bolivar", "vino de mango", "vino caribe"],
+  icons: {
+    icon: "/logo-vino-mompox-foto.jpg",
+    apple: "/logo-vino-mompox-foto.jpg",
+  },
   openGraph: {
     title: "Vino Mompox · Artesanal del Caribe",
     description: "Fermentado a mano en Mompox. Corozo, mango, mamón, ciruela y maracuyá.",
     type: "website",
     locale: "es_CO",
+    images: [{ url: "/logo-vino-mompox-foto.jpg", alt: "Vino Mompox" }],
   },
 };
 

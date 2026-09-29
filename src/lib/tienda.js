@@ -24,7 +24,12 @@ export const CATEGORIAS = [
   "Otro",
 ];
 
-export const METODOS_PAGO = ["Nequi", "Efectivo", "Transferencia", "Daviplata", "Otro"];
+export const METODOS_PAGO = ["Mercado Pago", "Nequi", "Efectivo", "Transferencia", "Daviplata", "Otro"];
+
+// Método de pago en línea (Checkout Pro). Lo demás sigue por WhatsApp.
+// PayU se conserva como alternativa (PAGO_PAYU) pero ya no se ofrece en la UI.
+export const PAGO_MP = "Mercado Pago";
+export const PAGO_PAYU = "PayU";
 
 // Cambia este número por tu WhatsApp real (código país + número, sin + ni espacios)
 export const WHATSAPP_NUMBER = "573001234567";
@@ -59,7 +64,7 @@ export function subscribeCatalogo(callback, onError) {
   );
 }
 
-export async function crearPedido({ customer, items, payment, notes }) {
+export async function crearPedido({ customer, items, payment, notes, uid = null, userEmail = "", shipping = null }) {
   const limpios = (items || [])
     .filter((i) => i.productId && (Number(i.qty) || 0) > 0)
     .map((i) => ({
@@ -74,6 +79,8 @@ export async function crearPedido({ customer, items, payment, notes }) {
   if (!customer?.address?.trim()) throw new Error("Indícanos la dirección de entrega.");
 
   const subtotal = limpios.reduce((a, i) => a + i.qty * i.unitPrice, 0);
+  const envio = Math.max(0, Math.round(Number(shipping?.cost) || 0));
+  const total = subtotal + envio;
 
   const batch = writeBatch(db);
   const orderRef = doc(collection(db, ORDERS));
@@ -86,11 +93,20 @@ export async function crearPedido({ customer, items, payment, notes }) {
     items: limpios,
     subtotal,
     discount: 0,
-    total: subtotal,
+    shipping: {
+      zoneId: String(shipping?.zoneId || ""),
+      zoneName: String(shipping?.zoneName || ""),
+      cost: envio,
+    },
+    shippingCost: envio,
+    total,
     payment: payment || "Nequi",
     notes: String(notes || "").trim(),
     status: "pendiente",
     origen: "tienda-web",
+    // Trazabilidad del usuario (null si pidió como invitado)
+    uid: uid || null,
+    userEmail: String(userEmail || ""),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -104,14 +120,19 @@ export async function crearPedido({ customer, items, payment, notes }) {
   return orderRef.id;
 }
 
-export function mensajeWhatsApp({ customer, items, total, payment, pedidoId }) {
+export function mensajeWhatsApp({ customer, items, subtotal, total, shipping, payment, pedidoId }) {
   const lineas = items.map((i) => `• ${i.qty}x ${i.name} — $${(i.unitPrice * i.qty).toLocaleString("es-CO")}`);
+  const base = subtotal ?? total;
   return encodeURIComponent(
     `🍷 *NUEVO PEDIDO · VINO MOMPOX* 🍷\n` +
       `Pedido: ${pedidoId || ""}\n` +
       `———————————\n` +
       `${lineas.join("\n")}\n` +
       `———————————\n` +
+      `Subtotal: $${Number(base).toLocaleString("es-CO")}\n` +
+      (shipping && (shipping.cost > 0 || shipping.zoneName)
+        ? `Envío${shipping.zoneName ? ` (${shipping.zoneName})` : ""}: $${Number(shipping.cost || 0).toLocaleString("es-CO")}\n`
+        : "") +
       `Total: $${Number(total).toLocaleString("es-CO")} (${payment})\n` +
       `Nombre: ${customer.name}\n` +
       `Tel: ${customer.phone}\n` +

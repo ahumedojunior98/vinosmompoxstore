@@ -245,5 +245,40 @@ body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Barrido de luz sobre la botella insignia */
+.shine-sweep {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -70%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255,248,234,0.35) 45%, rgba(255,248,234,0.55) 50%, rgba(255,248,234,0.35) 55%, transparent);
+  transform: skewX(-18deg);
+  animation: shine-sweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shine-sweep {
+  0% { left: -70%; }
+  55%, 100% { left: 130%; }
+}
+
+/* Grano fílmico sutil estilo Awwwards */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.1;
+  mix-blend-mode: overlay;
+}
+
+/* Zoom lento cinematográfico para la foto del banner */
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes ken-burns {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.13) translate(-1.5%, 1.5%); }
+}
+
 * { scrollbar-width: thin; scrollbar-color: #8a5a33 #f3e9d2; }
 ::selection { background: #c99a2b; color: #3d2b1f; }
