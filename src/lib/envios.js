@@ -75,6 +75,9 @@ export const DEPTO_POR_CIUDAD = {
   cali: "Valle del Cauca",
   medellin: "Antioquia",
   bucaramanga: "Santander",
+  "florida blanca": "Santander",
+  floridablanca: "Santander",
+  piedecuesta: "Santander",
 };
 
 export function deptoDeCiudad(ciudad) {
