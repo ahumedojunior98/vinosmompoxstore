@@ -1202,10 +1202,8 @@ export default function Tienda() {
         <div className="max-w-6xl mx-auto px-5 py-10 grid md:grid-cols-3 gap-8">
           <div>
             <p className="flex items-center gap-3">
-              <span className="inline-flex items-center px-3 py-1.5" style={{ background: "#fffdf6", border: "2px solid #3d2b1f", borderRadius: "1rem" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-11 w-auto" />
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-14 w-auto" />
             </p>
             <p className="text-[13px] font-medium mt-2 leading-relaxed" style={{ color: "#cbb98f" }}>
               Vinos artesanales de Corozo, Mango, Mamón, Ciruela y Maracuyá. Fermentados a mano en Santa Cruz de Mompox, Bolívar.
