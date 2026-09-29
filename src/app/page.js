@@ -257,7 +257,7 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.96 }}
               onClick={onVerCatalogo}
-              className="btn-relieve btn-dorado btn-shine px-7 py-3.5 cursor-pointer flex items-center gap-2 text-[15px]"
+              className="btn-relieve btn-dorado btn-shine px-7 py-3.5 cursor-pointer flex items-center justify-center gap-2 text-[15px] w-full sm:w-auto"
             >
               <Wine size={19} /> Ver los vinos <ChevronRight size={17} />
             </motion.button>
@@ -265,7 +265,7 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.96 }}
               onClick={onVerCombos}
-              className="glass-dark px-7 py-3.5 cursor-pointer flex items-center gap-2 text-[15px] font-extrabold rounded-2xl"
+              className="glass-dark px-7 py-3.5 cursor-pointer flex items-center justify-center gap-2 text-[15px] font-extrabold rounded-2xl w-full sm:w-auto"
               style={{ color: "#fff8ea", borderRadius: "1rem" }}
             >
               <Gift size={18} color="#f0d48a" /> Combos 🎁
@@ -279,11 +279,11 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             style={{ border: "1px solid rgba(240,212,138,0.35)" }}
           >
             {[[totalVinos, "", "vinos en bodega"], ["5", "", "frutas del Caribe"], ["100", "%", "fruta real"]].map(([n, suf, l], i) => (
-              <div key={i} className="px-4 py-3 text-center" style={{ background: i % 2 ? "rgba(240,212,138,0.12)" : "rgba(0,0,0,0.25)" }}>
-                <p className="font-display font-black text-2xl" style={{ color: "#ffe9a8" }}>
+              <div key={i} className="px-2 sm:px-4 py-3 text-center" style={{ background: i % 2 ? "rgba(240,212,138,0.12)" : "rgba(0,0,0,0.25)" }}>
+                <p className="font-display font-black text-xl sm:text-2xl" style={{ color: "#ffe9a8" }}>
                   <Contador valor={n} sufijo={suf} />
                 </p>
-                <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#f3e9d2" }}>{l}</p>
+                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider" style={{ color: "#f3e9d2" }}>{l}</p>
               </div>
             ))}
           </motion.div>
@@ -298,6 +298,27 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             <span className="flex items-center gap-1.5"><Truck size={15} color="#f0d48a" /> Entrega por WhatsApp</span>
             <span className="flex items-center gap-1.5"><Leaf size={15} color="#f0d48a" /> Sin afanes, como en Mompox</span>
           </motion.div>
+          {/* Mini vitrina solo móvil */}
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.95, ease: EASE_OUT }}
+            onClick={onVerCatalogo}
+            className="lg:hidden mt-6 relieve w-full p-3 flex items-center gap-3 text-left cursor-pointer"
+            style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/botella-corozo.png" alt="Botella Vino de Corozo" loading="lazy" className="w-14 h-20 object-cover object-top shrink-0" style={{ border: "2px solid #3d2b1f", borderRadius: "0.7rem" }} />
+            <span className="flex-1 min-w-0">
+              <span className="etiqueta" style={{ background: "#f0d48a" }}>El insignia</span>
+              <span className="block font-display font-bold text-lg leading-tight mt-1 truncate">Vino de Corozo · 750 ml</span>
+              <span className="flex items-center gap-1 mt-0.5" style={{ color: "#c99a2b" }}>
+                {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={12} fill="#c99a2b" />)}
+                <span className="text-[11px] font-extrabold" style={{ color: "#3d2b1f" }}>5.0</span>
+              </span>
+            </span>
+            <ChevronRight size={20} className="shrink-0 opacity-60" />
+          </motion.button>
         </motion.div>
 
         {/* Vitrina botella con parallax */}
