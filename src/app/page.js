@@ -314,8 +314,8 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/botella-corozo.png" alt="Botella Vino de Corozo" loading="lazy" className="w-14 h-20 object-cover object-top shrink-0" style={{ border: "2px solid #3d2b1f", borderRadius: "0.7rem" }} />
             <span className="flex-1 min-w-0">
-              <span className="etiqueta" style={{ background: "#f0d48a" }}>El insignia</span>
-              <span className="block font-display font-bold text-lg leading-tight mt-1 truncate">Vino de Corozo · 750 ml</span>
+              <span className="block text-[10px] font-extrabold uppercase opacity-60" style={{ letterSpacing: "0.18em" }}>El insignia</span>
+              <span className="block font-display font-bold text-lg leading-tight mt-0.5 truncate">Vino de Corozo · 750 ml</span>
               <span className="flex items-center gap-1 mt-0.5" style={{ color: "#c99a2b" }}>
                 {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={12} fill="#c99a2b" />)}
                 <span className="text-[11px] font-extrabold" style={{ color: "#3d2b1f" }}>5.0</span>
@@ -348,7 +348,6 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/botella-corozo.png" alt="Botella Vino Mompox · Vino de Corozo" className="w-full h-72 object-cover object-top" />
                   <span className="shine-sweep" aria-hidden="true" />
-                  <span className="etiqueta absolute top-3 left-3" style={{ background: "#f0d48a" }}>El insignia</span>
                   <div className="absolute inset-x-0 bottom-0 px-4 pt-8 pb-3 text-left" style={{ background: "linear-gradient(180deg, transparent, rgba(34,6,13,0.88))" }}>
                     <p className="font-display italic font-bold text-lg leading-none" style={{ color: "#ffe9a8" }}>Vino de Corozo</p>
                     <p className="text-[10px] font-extrabold tracking-[0.25em] mt-1" style={{ color: "#f3e9d2" }}>750 ML · DULCE · 2026</p>
@@ -359,23 +358,8 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
                   <span className="text-xs font-extrabold ml-1" style={{ color: "#3d2b1f" }}>5.0</span>
                 </div>
                 <p className="text-[12.5px] font-semibold mt-1 opacity-75">“El que todo el mundo repite. Rojo profundo, dulce, momposino.”</p>
+                <p className="text-[11px] font-extrabold uppercase mt-2 opacity-60" style={{ letterSpacing: "0.12em" }}>🌿 Fruta real · 🔥 Lote pequeño</p>
               </div>
-              <motion.div
-                animate={{ y: [0, -9, 0], rotate: [-6, -4, -6] }}
-                transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-14 top-8 relieve-suave px-3 py-2 text-xs font-black flex items-center gap-1.5"
-                style={{ background: "#ddf0da" }}
-              >
-                <Leaf size={14} color="#2e6b4f" /> Fruta real
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, 10, 0], rotate: [5, 3, 5] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-                className="absolute -right-10 bottom-16 relieve-suave px-3 py-2 text-xs font-black flex items-center gap-1.5"
-                style={{ background: "#fff" }}
-              >
-                <Flame size={14} color="#b3402a" /> Lote pequeño
-              </motion.div>
             </motion.div>
           </motion.div>
         </motion.div>
