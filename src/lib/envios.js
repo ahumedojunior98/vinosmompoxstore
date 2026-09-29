@@ -52,7 +52,8 @@ export function zonaPorId(zonas, id) {
   return (zonas || []).find((z) => z.id === id) || null;
 }
 
-// 32 departamentos de Colombia (lista curada, sin APIs externas).export const DEPARTAMENTOS = [
+// 32 departamentos de Colombia (lista curada, sin APIs externas).
+export const DEPARTAMENTOS = [
   "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá",
   "Caldas", "Caquetá", "Casanare", "Cauca", "Cesar", "Chocó",
   "Córdoba", "Cundinamarca", "Guainía", "Guaviare", "Huila", "La Guajira",
