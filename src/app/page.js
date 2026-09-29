@@ -206,11 +206,9 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             preload="metadata"
           />
         </motion.div>
-        {/* Scrims para legibilidad */}
-        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(100deg, rgba(28,5,10,0.95) 0%, rgba(34,6,13,0.85) 38%, rgba(74,15,26,0.5) 65%, rgba(74,15,26,0.3) 100%)" }} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28" style={{ background: "linear-gradient(180deg, transparent, rgba(28,5,10,0.75))" }} />
-        <div className="filigrana pointer-events-none absolute inset-0 opacity-40" />
-        <div className="grain pointer-events-none absolute inset-0" />
+        {/* Scrim ligero lateral solo para legibilidad del texto */}
+        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(100deg, rgba(28,5,10,0.78) 0%, rgba(28,5,10,0.5) 32%, rgba(28,5,10,0.05) 60%, transparent 78%)" }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20" style={{ background: "linear-gradient(180deg, transparent, rgba(28,5,10,0.45))" }} />
 
         <motion.div style={{ y: yTexto, opacity: fadeHero }} className="relative">
           <motion.div
