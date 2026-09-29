@@ -212,11 +212,18 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE_OUT }}
-            className="flex flex-wrap gap-2 mb-5"
+            className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-5 text-[12px] font-extrabold uppercase"
+            style={{ letterSpacing: "0.14em", color: "#f0d48a" }}
           >
-            <span className="etiqueta" style={{ background: "#f0d48a" }}><Sparkles size={12} /> 100% Artesanal</span>
-            <span className="etiqueta" style={{ background: "rgba(255,253,246,0.92)" }}>🌴 Santa Cruz de Mompox</span>
-            {ofertas > 0 ? <span className="etiqueta anim-pop" style={{ background: "#ff9d8a" }}><Flame size={12} /> {ofertas} ofertas hoy</span> : null}
+            <span className="flex items-center gap-1.5"><Sparkles size={13} /> 100% Artesanal</span>
+            <span aria-hidden="true" style={{ opacity: 0.45 }}>✦</span>
+            <span>🌴 Santa Cruz de Mompox</span>
+            {ofertas > 0 ? (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.45 }}>✦</span>
+                <span className="flex items-center gap-1.5"><Flame size={13} /> {ofertas} ofertas hoy</span>
+              </>
+            ) : null}
           </motion.div>
           <motion.p
             initial={{ opacity: 0, x: -24 }}
