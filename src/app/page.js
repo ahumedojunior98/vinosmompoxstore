@@ -5,7 +5,7 @@ import {
   Wine, ShoppingBasket, Plus, Minus, Trash2, Search, MapPin,
   Phone, Truck, BadgeCheck, Leaf, Flame, X, Send, Store,
   Sparkles, Star, Gift, ChevronRight, ChevronLeft, MessageCircle, Grape,
-  Landmark, HandHeart, PackageCheck, LogOut, Crown,
+  Landmark, HandHeart, PackageCheck, LogOut, Crown, Menu,
 } from "lucide-react";
 import { formatCOP, precioFinal } from "@/lib/utils";
 import {
@@ -69,24 +69,35 @@ function Anuncio() {
 
 function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onLogout }) {
   const { fbUser, perfil } = sesion || {};
+  const [menu, setMenu] = useState(false);
+  const LINKS = [["🍷 Vinos", "#catalogo"], ["🎁 Combos", "#combos"], ["🏺 Historia", "#historia"], ["🗣️ Opiniones", "#opiniones"], ["🧾 Cómo pedir", "#pedido"]];
   return (
     <header className="sticky top-0 z-40">
       <div style={{ background: "rgba(250,244,232,0.88)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: "2px solid #3d2b1f" }}>
-        <div className="max-w-6xl mx-auto px-3 sm:px-5 py-3 flex items-center justify-between gap-3">
-          <a href="#top" className="flex items-center gap-3 group">
-            <span className="relative flex items-center h-[60px] px-3 shrink-0 transition-transform group-hover:-rotate-2"
+        <div className="max-w-6xl mx-auto px-3 sm:px-5 py-2.5 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div className="flex justify-start">
+            <div className="relative">
+              <button onClick={() => setMenu((m) => !m)} aria-label="Menú" className="pill-min px-4 py-2.5 text-[13px] font-extrabold cursor-pointer flex items-center gap-1.5">
+                {menu ? <X size={16} /> : <Menu size={16} />} <span className="hidden sm:inline">Menú</span>
+              </button>
+              {menu ? (
+                <nav className="anim-pop absolute left-0 top-full mt-2 z-50 relieve-suave p-2 min-w-52 flex flex-col gap-0.5" style={{ background: "#fffdf6" }}>
+                  {LINKS.map(([label, href]) => (
+                    <a key={href} href={href} onClick={() => setMenu(false)} className="px-4 py-2.5 rounded-xl text-sm font-extrabold hover:bg-[#f3e9d2] transition-colors whitespace-nowrap">{label}</a>
+                  ))}
+                </nav>
+              ) : null}
+            </div>
+          </div>
+          <a href="#top" className="flex justify-center group" aria-label="Vino Mompox - inicio">
+            <span className="relative flex items-center h-[68px] px-3.5 shrink-0 transition-transform group-hover:-rotate-2"
               style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)", border: "2px solid #3d2b1f", borderRadius: "1rem", boxShadow: "3px 3px 0 #3d2b1f" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-12 w-auto" />
+              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-14 w-auto" />
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px]" style={{ background: "#f0d48a", border: "2px solid #3d2b1f", borderRadius: "999px" }}>★</span>
             </span>
           </a>
-          <nav className="hidden lg:flex items-center gap-1 text-[13px] font-extrabold">
-            {[["Vinos", "#catalogo"], ["Combos", "#combos"], ["Historia", "#historia"], ["Opiniones", "#opiniones"], ["Cómo pedir", "#pedido"]].map(([label, href]) => (
-              <a key={href} href={href} className="px-3 py-1.5 rounded-full hover:bg-[#3d2b1f] hover:text-[#fff8ea] transition-colors">{label}</a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             {fbUser ? (
               <span className="hidden sm:flex items-center gap-2 pl-1 pr-2 py-1 rounded-full" style={{ background: "#fff", border: "2px solid #3d2b1f" }} title={perfil?.email || fbUser.email || ""}>
                 {perfil?.photoURL || fbUser.photoURL
@@ -101,7 +112,7 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
               </span>
             ) : (
               <button onClick={onLogin} disabled={entrando}
-                className="btn-relieve btn-crema px-3.5 py-2.5 text-[13px] cursor-pointer hidden sm:flex items-center gap-1.5 disabled:opacity-60">
+                className="pill-min px-4 py-2.5 text-[13px] font-extrabold cursor-pointer hidden sm:flex items-center gap-1.5">
                 🔑 {entrando ? "…" : "Entrar"}
               </button>
             )}
@@ -113,12 +124,16 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
               ) : null}
             </button>
           </div>
-          {fbUser ? (
-            <button onClick={onLogout} className="sm:hidden text-[11px] font-extrabold underline opacity-70 cursor-pointer">Salir ({(perfil?.displayName || "").split(" ")[0] || "cuenta"})</button>
-          ) : (
-            <button onClick={onLogin} disabled={entrando} className="sm:hidden text-[11px] font-extrabold underline opacity-70 cursor-pointer">🔑 Entrar con Google</button>
-          )}
         </div>
+        {fbUser ? (
+          <div className="sm:hidden max-w-6xl mx-auto px-3 pb-2">
+            <button onClick={onLogout} className="text-[11px] font-extrabold underline opacity-70 cursor-pointer">Salir ({(perfil?.displayName || "").split(" ")[0] || "cuenta"})</button>
+          </div>
+        ) : (
+          <div className="sm:hidden max-w-6xl mx-auto px-3 pb-2">
+            <button onClick={onLogin} disabled={entrando} className="pill-min px-3.5 py-1.5 text-[12px] font-extrabold cursor-pointer">🔑 {entrando ? "…" : "Entrar con Google"}</button>
+          </div>
+        )}
       </div>
     </header>
   );
@@ -248,7 +263,7 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             className="mt-5 text-[15px] sm:text-[17px] font-medium leading-relaxed max-w-xl"
             style={{ color: "#f3e9d2" }}
           >
-            Corozo, mango, mamón, ciruela y maracuyá del Caribe. Dulces, vivos y de lote pequeño.
+            Corozo, mango, mamón, ciruela y maracuyá del Caribe. Dulces, vivos, momposinos.
             <strong className="font-extrabold" style={{ color: "#ffe9a8" }}> Pide aquí y te lo llevamos.</strong>
           </motion.p>
           <motion.div
@@ -358,7 +373,7 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
                   <span className="text-xs font-extrabold ml-1" style={{ color: "#3d2b1f" }}>5.0</span>
                 </div>
                 <p className="text-[12.5px] font-semibold mt-1 opacity-75">“El que todo el mundo repite. Rojo profundo, dulce, momposino.”</p>
-                <p className="text-[11px] font-extrabold uppercase mt-2 opacity-60" style={{ letterSpacing: "0.12em" }}>🌿 Fruta real · 🔥 Lote pequeño</p>
+                <p className="text-[11px] font-extrabold uppercase mt-2 opacity-60" style={{ letterSpacing: "0.12em" }}>🌿 Fruta real · 🍷 Hecho a mano</p>
               </div>
             </motion.div>
           </motion.div>
@@ -516,7 +531,7 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
                 <Grape size={30} className="opacity-50" />
               </span>
               <p className="font-display font-bold text-xl mt-3">Tu canasta está vacía</p>
-              <p className="text-sm font-semibold opacity-70">Los mejores lotes vuelan. Agrega tus favoritos.</p>
+              <p className="text-sm font-semibold opacity-70">Lo bueno vuela. Agrega tus favoritos.</p>
               <button onClick={onClose} className="btn-relieve btn-dorado px-5 py-2.5 mt-4 text-sm cursor-pointer">🍷 Ver vinos</button>
             </div>
           ) : (
@@ -898,8 +913,18 @@ export default function Tienda() {
   // Flujo PayU WebCheckout: crea orden interna (pending) y redirige al checkout oficial.
   // Solo se envían productId + qty: el total lo calcula el servidor desde Firestore.
   // La canasta NO se limpia aquí: si el pago falla o se abandona, sigue intacta.
+  async function exigirSesion() {
+    if (fbUser) return true;
+    setError("🔑 Para comprar, entra primero con Google. Luego confirma tu pedido de nuevo.");
+    try {
+      await onLogin();
+    } catch { /* el mensaje de error de login ya se muestra */ }
+    return false;
+  }
+
   async function onPagarPayU() {
     setError(""); setOkMsg("");
+    if (!(await exigirSesion())) return;
     if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
     if (!exigirZona()) return;
     setEnviando(true);
@@ -944,6 +969,7 @@ export default function Tienda() {
   // La canasta NO se limpia aquí: si el pago falla o se abandona, sigue intacta.
   async function onPagarMP() {
     setError(""); setOkMsg("");
+    if (!(await exigirSesion())) return;
     if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
     if (!exigirZona()) return;
     setEnviando(true);
@@ -975,6 +1001,7 @@ export default function Tienda() {
     if (pago === PAGO_MP) return onPagarMP();
     if (pago === PAGO_PAYU) return onPagarPayU();
     setError(""); setOkMsg("");
+    if (!(await exigirSesion())) return;
     if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
     if (!exigirZona()) return;
     setEnviando(true);
@@ -1140,7 +1167,7 @@ export default function Tienda() {
             </h2>
             <div className="mt-7 grid md:grid-cols-3 gap-4">
               {[
-                { icon: <Grape size={24} color="#7a1e2b" />, bg: "#f7dfe2", t: "🌴 De la fruta al vino", d: "Corozo, mango, mamón, ciruela y maracuyá en lotes pequeños. Sin afanes, como se hace todo en Mompox." },
+                { icon: <Grape size={24} color="#7a1e2b" />, bg: "#f7dfe2", t: "🌴 De la fruta al vino", d: "Corozo, mango, mamón, ciruela y maracuyá de cosecha fresca. Sin afanes, como se hace todo en Mompox." },
                 { icon: <Landmark size={24} color="#8a5a33" />, bg: "#f7ead0", t: "🏺 Receta de la casa", d: "Dulces, aromáticos y de cuerpo vivo. Cada cosecha cambia un poco — esa es la gracia de lo artesanal." },
                 { icon: <HandHeart size={24} color="#2e6b4f" />, bg: "#ddf0da", t: "🤝 Compra directa", d: "Lo que pides aquí entra al cuaderno del patrón: se descuenta del stock y te hablamos por WhatsApp." },
               ].map((c, i) => (
@@ -1177,7 +1204,7 @@ export default function Tienda() {
         {/* Cómo pedir */}
         <section id="pedido" className="relieve-suave p-6 sm:p-7 reveal scroll-mt-28" style={{ background: "linear-gradient(180deg,#fffdf6,#faf0d8)" }}>
           <h2 className="font-display font-black text-3xl sm:text-4xl mb-1 text-center" style={{ color: "#4a0f1a" }}>Pedir es <span className="italic" style={{ color: "#b3402a" }}>facilito</span> 🧾</h2>
-          <p className="text-sm font-semibold opacity-70 mb-5 text-center max-w-2xl mx-auto">Sin registro obligatorio, sin enredos. Como pedirle al vecino. {fbUser ? "🔑 Entraste con Google: tu canasta se guarda en la nube." : "💡 Si entras con Google, tu canasta te sigue en cualquier dispositivo."}</p>
+          <p className="text-sm font-semibold opacity-70 mb-5 text-center max-w-2xl mx-auto">Entra con Google y pide en un minuto, como pedirle al vecino. {fbUser ? "🔑 Tu canasta se guarda en la nube." : "🔑 Te pediremos entrar con Google al confirmar."}</p>
           <ol className="grid sm:grid-cols-3 gap-3">
             {[
               { n: "1", t: "Arma tu canasta 🧺", d: "Agrega vinos y combos. Todo se guarda solo." },
@@ -1215,7 +1242,7 @@ export default function Tienda() {
               </span>
             </p>
             <p className="text-[13px] font-medium mt-2 leading-relaxed" style={{ color: "#cbb98f" }}>
-              Vinos artesanales de Corozo, Mango, Mamón, Ciruela y Maracuyá. Fermentados en pequeños lotes en Santa Cruz de Mompox, Bolívar.
+              Vinos artesanales de Corozo, Mango, Mamón, Ciruela y Maracuyá. Fermentados a mano en Santa Cruz de Mompox, Bolívar.
             </p>
             <p className="mt-3 flex items-center gap-1.5 text-[12px] font-bold" style={{ color: "#f0d48a" }}><MapPin size={14} /> Mompox · Bolívar · Caribe colombiano</p>
           </div>
