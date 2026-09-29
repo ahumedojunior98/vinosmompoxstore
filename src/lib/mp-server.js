@@ -5,7 +5,7 @@
 //   MP_ENV=sandbox|production (explícito; debe coincidir con el tipo de token)
 //   MP_ACCESS_TOKEN (TEST-... pruebas · APP_USR-... real; jamás al front)
 //   MP_WEBHOOK_SECRET (Tus integraciones → Webhooks → Configurar notificación)
-//   MP_APP_URL (base pública; fallback PAYU_APP_URL / NEXT_PUBLIC_APP_URL)
+//   MP_APP_URL (base pública del sitio, https en producción)
 import crypto from "crypto";
 import {
   MP_API_BASE,
@@ -40,7 +40,7 @@ function leerConfig() {
   }
   const env = resolverEnvMp({ env: process.env.MP_ENV || "", accessToken });
   const esProd = env === "production";
-  const appUrl = ((process.env.MP_APP_URL || process.env.PAYU_APP_URL || process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, ""));
+  const appUrl = ((process.env.MP_APP_URL || process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, ""));
   if (esProd) {
     if (!appUrl || !/^https:\/\//i.test(appUrl) || /localhost|127\.0\.0\.1|\.local$/i.test(appUrl)) {
       const err = new Error("En production MP_APP_URL debe ser https pública (sin localhost).");
@@ -162,7 +162,7 @@ export function validarFirmaWebhookMp({ xSignature, xRequestId, dataId }) {
   }
 }
 
-// Firestore privilegiado (Admin SDK) — mismo patrón que payu-server.
+// Firestore privilegiado (Admin SDK) para actualizar órdenes y stock.
 let adminApp = null;
 
 export function adminDbMp() {

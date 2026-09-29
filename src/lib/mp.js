@@ -12,7 +12,7 @@ export const MP_ENVS = ["sandbox", "production"];
 
 export const MP_CURRENCY = "COP";
 
-// Estados internos de la orden (se añade refunded frente a PayU).
+// Estados internos de la orden de Mercado Pago.
 export const MP_ESTADOS = ["pending", "paid", "rejected", "cancelled", "error", "refunded"];
 
 // status de Payment API → estado interno.
