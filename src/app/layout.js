@@ -1,4 +1,20 @@
 import "./globals.css";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
+
+const display = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const texto = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-texto",
+  display: "swap",
+});
 
 export const metadata = {
   title: "Vino Mompox · Vinos artesanales del Caribe",
@@ -20,7 +36,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className="h-full">
+    <html lang="es" className={`h-full ${display.variable} ${texto.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

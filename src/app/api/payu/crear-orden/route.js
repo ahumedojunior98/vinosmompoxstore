@@ -33,6 +33,8 @@ export async function POST(req) {
   const nombre = String(customer.name || "").trim();
   const telefono = String(customer.phone || "").trim();
   const direccion = String(customer.address || "").trim();
+  const ciudad = String(customer.ciudad || "").trim().slice(0, 80);
+  const depto = String(customer.depto || "").trim().slice(0, 80);
   const email = String(customer.email || "").trim().toLowerCase();
   const notes = String(body.notes || "").trim().slice(0, 500);
   const uid = body.uid || null;
@@ -43,6 +45,8 @@ export async function POST(req) {
   if (!nombre) return error(400, "Falta el nombre del cliente.");
   if (!telefono) return error(400, "Falta el teléfono / WhatsApp.");
   if (!direccion) return error(400, "Falta la dirección de entrega.");
+  if (!ciudad) return error(400, "Falta la ciudad.");
+  if (!depto) return error(400, "Falta el departamento.");
   if (!esEmailValido(email)) return error(400, "Se necesita un correo válido para pagar con PayU.");
   if (itemsRaw.length === 0) return error(400, "La canasta está vacía.");
   if (itemsRaw.length > MAX_LINEAS) return error(400, "Demasiadas líneas en la orden.");
@@ -99,7 +103,11 @@ export async function POST(req) {
     if (!zSnap.exists()) return error(400, "La zona de envío ya no existe. Elige otra.");
     const z = zSnap.data() || {};
     if (z.activa === false) return error(400, `La zona «${z.nombre || "envío"}» está pausada. Elige otra.`);
-    const valor = Math.max(0, Math.round(Number(z.valor) || 0));
+    // Precio con destino: si la dirección coincide con una ruta con precio propio,
+    // se usa ese valor (igual que la tienda). Nunca el costo del cliente.
+    const { precioZonaPara } = await import("@/lib/envios");
+    const det = precioZonaPara({ ...z, id: zSnap.id }, `${direccion} ${ciudad} ${depto}`);
+    const valor = Math.max(0, Math.round(Number(det.precio) || 0));
     const gratisDesde = Math.max(0, Math.round(Number(z.gratisDesde) || 0));
     const cost = gratisDesde > 0 && subtotal >= gratisDesde ? 0 : valor;
     shipping = { zoneId: zSnap.id, zoneName: String(z.nombre || ""), cost };
@@ -151,7 +159,7 @@ export async function POST(req) {
   try {
     const ref = await addDoc(collection(db, ORDERS), {
       referenciaPayU: reference,
-      customer: { name: nombre, phone: telefono, address: direccion, email },
+      customer: { name: nombre, phone: telefono, address: direccion, ciudad, depto, email },
       items,
       subtotal,
       discount: 0,

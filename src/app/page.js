@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Wine, ShoppingBasket, Plus, Minus, Trash2, Search, MapPin,
   Phone, Truck, BadgeCheck, Leaf, Flame, X, Send, Store,
-  Sparkles, Star, Gift, ChevronRight, MessageCircle, Grape,
+  Sparkles, Star, Gift, ChevronRight, ChevronLeft, MessageCircle, Grape,
   Landmark, HandHeart, PackageCheck, LogOut, Crown,
 } from "lucide-react";
 import { formatCOP, precioFinal } from "@/lib/utils";
@@ -19,7 +19,7 @@ import {
   CATEGORIAS, METODOS_PAGO, WHATSAPP_NUMBER, PAGO_MP, PAGO_PAYU,
   subscribeCatalogo, crearPedido, mensajeWhatsApp,
 } from "@/lib/tienda";
-import { subscribeZonas, zonasActivas, calcularEnvio, zonaPorId } from "@/lib/envios";
+import { subscribeZonas, zonasActivas, calcularEnvio, zonaPorId, detectarZona, DEPARTAMENTOS } from "@/lib/envios";
 
 /* ---------- Reveal on scroll ---------- */
 function useReveal(deps = []) {
@@ -77,7 +77,7 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
             <span className="relative flex items-center h-[52px] px-2.5 shrink-0 transition-transform group-hover:-rotate-2"
               style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)", border: "2px solid #3d2b1f", borderRadius: "1rem", boxShadow: "3px 3px 0 #3d2b1f" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-10 w-auto" />
+              <img src="/logo-vino-mompox-foto.jpg" alt="Vino Mompox" className="h-10 w-auto rounded-lg object-cover" />
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px]" style={{ background: "#f0d48a", border: "2px solid #3d2b1f", borderRadius: "999px" }}>★</span>
             </span>
             <span>
@@ -312,7 +312,7 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
             >
               <div className="relieve p-6 pt-5 text-center w-72" style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)" }}>
                 <div className="cenefa !mx-[-1.5rem] !-mt-5 mb-4" style={{ borderRadius: "0" }} />
-                <div className="mx-auto w-full rounded-2xl relative overflow-hidden"
+                <div className="mx-auto w-full h-72 rounded-2xl relative overflow-hidden"
                   style={{ border: "2px solid #3d2b1f", background: "#fffdf6" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/botella-corozo.png" alt="Botella Vino Mompox · Vino de Corozo" className="w-full h-72 object-cover object-top" />
@@ -408,7 +408,7 @@ function ProductCard({ p, qty, index, onAdd, onMore, onLess }) {
 
       <div className="p-4 flex flex-col gap-2 flex-1">
         <h3 className="font-display font-bold text-[21px] leading-tight">{p.name}</h3>
-        {p.description ? <p className="text-[13px] font-medium opacity-70 leading-snug line-clamp-2">{p.description}</p> : null}
+        {p.description ? <p className="text-[13px] font-medium opacity-75 leading-snug">{p.description}</p> : null}
         {p.type === "combo" && Array.isArray(p.comboItems) && p.comboItems.length > 0 ? (
           <p className="text-xs font-bold px-3 py-2 relieve-hundido">🎁 {p.comboItems.map((i) => `${i.qty}× ${i.name}`).join(" · ")}</p>
         ) : (
@@ -443,7 +443,42 @@ function ProductCard({ p, qty, index, onAdd, onMore, onLess }) {
   );
 }
 
-function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, onClear, subtotal, envio, total, zona, zonasDisponibles, zonaId, setZonaId, form, setForm, pago, setPago, enviando, error, okMsg, onPedir, payuEnv, mpEnv }) {
+/* Carrusel horizontal con flechas y scroll-snap: ofertas y combos primero */
+function CarruselDestacados({ items, cart, onAdd, onMore, onLess }) {
+  const carril = useRef(null);
+  function mover(dir) {
+    const el = carril.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  }
+  return (
+    <section className="reveal flex flex-col gap-4 scroll-mt-28">
+      <div className="flex items-end justify-between flex-wrap gap-2">
+        <div>
+          <p className="text-[11px] font-extrabold tracking-[0.25em]" style={{ color: "#b3402a" }}>— PARA LLEVAR YA —</p>
+          <h2 className="font-display font-black text-3xl sm:text-4xl" style={{ color: "#4a0f1a" }}>
+            Destacados <span className="italic" style={{ color: "#b3402a" }}>de la bodega</span>
+          </h2>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => mover(-1)} aria-label="Anterior" className="btn-relieve btn-crema w-11 h-11 flex items-center justify-center cursor-pointer"><ChevronLeft size={18} /></button>
+          <button onClick={() => mover(1)} aria-label="Siguiente" className="btn-relieve btn-crema w-11 h-11 flex items-center justify-center cursor-pointer"><ChevronRight size={18} /></button>
+        </div>
+      </div>
+      <div ref={carril} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-1 px-1">
+        {items.map((p) => (
+          <div key={p.id} className="flex-none w-72 sm:w-80 snap-start">
+            <ProductCard p={p} qty={cart[p.id] || 0}
+              onAdd={() => onAdd(p.id)} onMore={() => onMore(p.id)} onLess={() => onLess(p.id)} />
+          </div>
+        ))}
+      </div>
+      <p className="text-xs font-bold opacity-60 text-center sm:hidden">Desliza 👉 para ver más</p>
+    </section>
+  );
+}
+
+function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, onClear, subtotal, envio, total, zona, msgZona, sugerenciasCiudad, form, setForm, pago, setPago, enviando, error, okMsg, onPedir, payuEnv, mpEnv }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
@@ -506,15 +541,31 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
                   <label className="text-[11px] font-extrabold uppercase tracking-wider">WhatsApp *<input className="input-relieve mt-1 normal-case" placeholder="300…" value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} /></label>
                   <label className="text-[11px] font-extrabold uppercase tracking-wider">Pago<select className="input-relieve mt-1 normal-case cursor-pointer" value={pago} onChange={(e) => setPago(e.target.value)}>{METODOS_PAGO.map((m) => <option key={m}>{m}</option>)}</select></label>
                 </div>
-                <label className="text-[11px] font-extrabold uppercase tracking-wider">Dirección *<input className="input-relieve mt-1 normal-case" placeholder="Barrio, ciudad, referencia…" value={form.dir} onChange={(e) => setForm({ ...form, dir: e.target.value })} /></label>
-                <label className="text-[11px] font-extrabold uppercase tracking-wider">Zona de envío *<select className="input-relieve mt-1 normal-case cursor-pointer" value={zonaId} onChange={(e) => setZonaId(e.target.value)}>
-                  <option value="">— Elige tu zona —</option>
-                  {zonasDisponibles.map((z) => (
-                    <option key={z.id} value={z.id}>
-                      {z.nombre} — {formatCOP(z.valor)}{Number(z.gratisDesde) > 0 ? ` (gratis desde ${formatCOP(z.gratisDesde)})` : ""}
-                    </option>
-                  ))}
-                </select></label>
+                <label className="text-[11px] font-extrabold uppercase tracking-wider">Dirección *<input className="input-relieve mt-1 normal-case" placeholder="Barrio, calle, referencia…" value={form.dir} onChange={(e) => setForm({ ...form, dir: e.target.value })} /></label>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider">Ciudad *<input className="input-relieve mt-1 normal-case" placeholder="Ej: Barranquilla" list="vm-ciudades" value={form.ciudad || ""} onChange={(e) => setForm({ ...form, ciudad: e.target.value })} /></label>
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider">Departamento *<select className="input-relieve mt-1 normal-case cursor-pointer" value={form.depto || ""} onChange={(e) => setForm({ ...form, depto: e.target.value })}>
+                    <option value="">— Elige —</option>
+                    {DEPARTAMENTOS.map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select></label>
+                </div>
+                <datalist id="vm-ciudades">
+                  {sugerenciasCiudad.map((c) => <option key={c} value={c} />)}
+                </datalist>
+                {msgZona ? <p className="text-[12px] font-extrabold anim-pop" style={{ color: zona ? "#2e6b4f" : (form.ciudad || "").trim().length >= 3 ? "#b3402a" : "#8a7a5a" }}>{msgZona}</p> : null}
+                <div className="relieve-hundido px-3 py-2.5 flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider opacity-70">🚚 Envío</span>
+                  {zona ? (
+                    <span className="text-right">
+                      <span className="block text-[11px] font-bold opacity-60">{zona.nombre}</span>
+                      <span className="font-display font-black text-xl" style={{ color: "#2e6b4f" }}>
+                        {envio === 0 && Number(zona?.valor) > 0 ? "🎉 Gratis" : formatCOP(envio)}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-[12px] font-bold opacity-60 text-right">Se calcula al escribir tu ciudad 👆</span>
+                  )}
+                </div>
                 <label className="text-[11px] font-extrabold uppercase tracking-wider">Nota (opcional)<input className="input-relieve mt-1 normal-case" placeholder="Ej: es para regalo…" value={form.nota} onChange={(e) => setForm({ ...form, nota: e.target.value })} /></label>
                 {error ? <p className="text-[13px] font-bold px-3 py-2 relieve-suave anim-pop" style={{ background: "#fbe3df", borderColor: "#7a1e2b" }}>⚠️ {error}</p> : null}
                 {okMsg ? <p className="text-[13px] font-bold px-3 py-2 relieve-suave anim-pop" style={{ background: "#ddf0da", borderColor: "#2e6b4f" }}>{okMsg}</p> : null}
@@ -525,7 +576,7 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
         {Object.keys(cart).length > 0 ? (
           <div className="p-4 flex flex-col gap-2" style={{ background: "#fffdf6", borderTop: "3px solid #3d2b1f" }}>
             <div className="flex justify-between font-bold text-sm"><span>Subtotal ({Object.values(cart).reduce((a, b) => a + b, 0)} botellas)</span><span>{formatCOP(subtotal)}</span></div>
-            <div className="flex justify-between font-bold text-sm"><span>Envío{zona ? ` (${zona.nombre})` : ""}</span><span>{zonaId ? (envio === 0 && Number(zona?.valor) > 0 ? "🎉 Gratis" : formatCOP(envio)) : "— elige zona —"}</span></div>
+            <div className="flex justify-between font-bold text-sm"><span>Envío{zona ? ` (${zona.nombre})` : ""}</span><span>{zona ? (envio === 0 && Number(zona?.valor) > 0 ? "🎉 Gratis" : formatCOP(envio)) : "— según tu ciudad —"}</span></div>
             <div className="flex justify-between items-center"><span className="font-display font-bold text-xl">Total</span><span className="font-display font-black text-3xl" style={{ color: "#7a1e2b" }}>{formatCOP(total)}</span></div>
             <button onClick={onPedir} disabled={enviando} className="btn-relieve btn-palma btn-shine w-full py-3.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 text-[15px]">
               <Send size={16} /> {enviando
@@ -564,7 +615,7 @@ export default function Tienda() {
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const [bumpKey, setBumpKey] = useState(0);
-  const [form, setForm] = useState({ nombre: "", tel: "", dir: "", nota: "", email: "" });
+  const [form, setForm] = useState({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "" });
   const [pago, setPago] = useState("Nequi");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
@@ -575,6 +626,8 @@ export default function Tienda() {
   const [mpEnv, setMpEnv] = useState("sandbox");
   const [zonas, setZonas] = useState([]);
   const [zonaId, setZonaId] = useState("");
+  const [msgZona, setMsgZona] = useState("");
+  const [precioDetectado, setPrecioDetectado] = useState(null);
   const sesion = useSesion();
   const { fbUser, perfil } = sesion;
   // Evita que el subscribe del carrito pise cambios locales recién hechos
@@ -714,6 +767,12 @@ export default function Tienda() {
   const sencillos = useMemo(() => filtrados.filter((p) => p.type !== "combo"), [filtrados]);
   const combosFiltrados = useMemo(() => filtrados.filter((p) => p.type === "combo"), [filtrados]);
   const ofertas = useMemo(() => productos.filter((p) => Number(p.discount) > 0).length, [productos]);
+  const destacados = useMemo(() => {
+    const conOferta = productos.filter((p) => Number(p.discount) > 0);
+    const enCombo = productos.filter((p) => p.type === "combo" && !(Number(p.discount) > 0));
+    const resto = productos.filter((p) => !(Number(p.discount) > 0) && p.type !== "combo");
+    return [...conOferta, ...enCombo, ...resto].slice(0, 10);
+  }, [productos]);
 
   const cartCount = useMemo(() => Object.values(cart).reduce((a, b) => a + (Number(b) || 0), 0), [cart]);
   const detalleCart = useMemo(() => Object.entries(cart).map(([id, qty]) => {
@@ -722,17 +781,70 @@ export default function Tienda() {
   }).filter((i) => i.qty > 0), [cart, productos]);
   const subtotal = useMemo(() => detalleCart.reduce((a, i) => a + i.qty * i.unitPrice, 0), [detalleCart]);
   const zonasDisponibles = useMemo(() => zonasActivas(zonas), [zonas]);
+  // Ciudades sugeridas al escribir (salen de tus zonas + destinos del admin)
+  const sugerenciasCiudad = useMemo(() => {
+    const set = new Set();
+    const cap = (s) => String(s || "").split(" ").map((w) => (w ? w[0].toUpperCase() + w.slice(1) : "")).join(" ");
+    for (const z of zonasDisponibles) {
+      for (const c of z.ciudades || []) if (c) set.add(cap(c));
+      for (const d of z.destinos || []) if (d?.ciudad) set.add(cap(d.ciudad));
+    }
+    return [...set].sort((a, b) => a.localeCompare(b, "es"));
+  }, [zonasDisponibles]);
   const zona = useMemo(() => zonaPorId(zonasDisponibles, zonaId), [zonasDisponibles, zonaId]);
-  const envio = useMemo(() => calcularEnvio(zona, subtotal), [zona, subtotal]);
+  // Zona efectiva: aplica el precio del destino detectado (ruta con precio
+  // propio) sobre el valor base de la zona. Todo es automático: el cliente
+  // solo escribe dirección, ciudad y departamento.
+  const zonaEfectiva = useMemo(() => {
+    if (!zona) return null;
+    if (precioDetectado == null) return zona;
+    return { ...zona, valor: precioDetectado };
+  }, [zona, precioDetectado]);
+  const envio = useMemo(() => calcularEnvio(zonaEfectiva, subtotal), [zonaEfectiva, subtotal]);
   const total = useMemo(() => subtotal + envio, [subtotal, envio]);
 
+  // Detección automática: al escribir dirección, ciudad o departamento se
+  // detecta la zona y el precio al instante. Sin selector manual.
+  const textoDestino = useMemo(
+    () => [form.dir, form.ciudad, form.depto].filter(Boolean).join(" "),
+    [form.dir, form.ciudad, form.depto]
+  );
+  useEffect(() => {
+    if (!textoDestino || textoDestino.trim().length < 3) {
+      setZonaId("");
+      setPrecioDetectado(null);
+      setMsgZona("");
+      return;
+    }
+    const hallada = detectarZona(zonasDisponibles, textoDestino);
+    if (hallada) {
+      setZonaId(hallada.zona.id);
+      setPrecioDetectado(hallada.precio);
+      const etiqueta = hallada.match.charAt(0).toUpperCase() + hallada.match.slice(1);
+      setMsgZona(
+        hallada.esDestino
+          ? `📍 Detectamos ${etiqueta}: ruta ${hallada.zona.nombre} a ${formatCOP(hallada.precio)}`
+          : `📍 Detectamos ${etiqueta}: envío ${formatCOP(hallada.precio)} (${hallada.zona.nombre})`
+      );
+    } else {
+      // Sin coincidencia: no hay zona y el total queda pendiente del envío
+      setZonaId("");
+      setPrecioDetectado(null);
+      setMsgZona(
+        (form.ciudad || "").trim().length >= 3
+          ? "⚠️ Aún no llegamos a esa ciudad. Revisa la escritura o escríbenos por WhatsApp y coordinamos."
+          : "⌨️ Elige tu departamento y escribe tu ciudad para calcular el envío"
+      );
+    }
+  }, [textoDestino, zonasDisponibles]);
+
   function shippingPayload() {
-    if (!zona) return { shippingZoneId: "", shipping: { zoneId: "", zoneName: "", cost: 0 } };
-    return { shippingZoneId: zona.id, shipping: { zoneId: zona.id, zoneName: zona.nombre, cost: envio } };
+    if (!zonaEfectiva) return { shippingZoneId: "", shipping: { zoneId: "", zoneName: "", cost: 0 } };
+    return { shippingZoneId: zonaEfectiva.id, shipping: { zoneId: zonaEfectiva.id, zoneName: zonaEfectiva.nombre, cost: envio } };
   }
 
   function exigirZona() {
-    if (!zona) { setError("Elige tu zona de envío para calcular el total."); return false; }
+    if (!zonaEfectiva) { setError("Escribe tu ciudad y departamento para calcular el envío. Si no la detectamos, escríbenos por WhatsApp."); return false; }
     return true;
   }
 
@@ -768,7 +880,7 @@ export default function Tienda() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer: { name: form.nombre, phone: form.tel, address: form.dir, email: form.email },
+          customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto, email: form.email },
           items: detalleCart.map(({ productId, qty }) => ({ productId, qty })),
           ...shippingPayload(),
           notes: form.nota,
@@ -812,7 +924,7 @@ export default function Tienda() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer: { name: form.nombre, phone: form.tel, address: form.dir, email: form.email },
+          customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto, email: form.email },
           items: detalleCart.map(({ productId, qty }) => ({ productId, qty })),
           ...shippingPayload(),
           notes: form.nota,
@@ -841,7 +953,7 @@ export default function Tienda() {
     try {
       const ship = shippingPayload().shipping;
       const pedidoId = await crearPedido({
-        customer: { name: form.nombre, phone: form.tel, address: form.dir },
+        customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto },
         items: detalleCart,
         payment: pago,
         notes: form.nota,
@@ -853,10 +965,10 @@ export default function Tienda() {
       registrarCompraUsuario(fbUser?.uid, total);
       setOkMsg("✅ ¡Pedido guardado! Te abrimos WhatsApp para confirmarlo…");
       const msg = mensajeWhatsApp({
-        customer: { name: form.nombre, phone: form.tel, address: form.dir, notes: form.nota },
+        customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto, notes: form.nota },
         items: detalleCart, subtotal, total, shipping: ship, payment: pago, pedidoId,
       });
-      setCart({}); setForm({ nombre: "", tel: "", dir: "", nota: "", email: "" }); setZonaId("");
+      setCart({}); setForm({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "" }); setZonaId("");
       setTimeout(() => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank"), 800);
     } catch (e) {
       setError(e.message);
@@ -885,6 +997,13 @@ export default function Tienda() {
           onVerCatalogo={() => scrollTo("catalogo")} onVerCombos={() => scrollTo("combos")} />
 
         <TiraSabores />
+
+        {!cargando && destacados.length > 0 ? (
+          <CarruselDestacados
+            items={destacados} cart={cart}
+            onAdd={(id) => addToCart(id, 1)} onMore={(id) => addToCart(id, 1)} onLess={(id) => addToCart(id, -1)}
+          />
+        ) : null}
 
         {errorCat ? <div className="relieve-suave px-4 py-3 text-sm font-bold anim-pop" style={{ background: "#fbe3df" }}>⚠️ {errorCat}</div> : null}
 
@@ -1112,8 +1231,7 @@ export default function Tienda() {
         cart={cart} productos={productos}
         onMore={(id) => addToCart(id, 1)} onLess={(id) => addToCart(id, -1)}
         onRemove={removeFromCart} onClear={() => setCart({})}
-        subtotal={subtotal} envio={envio} total={total} zona={zona}
-        zonasDisponibles={zonasDisponibles} zonaId={zonaId} setZonaId={setZonaId}
+        subtotal={subtotal} envio={envio} total={total} zona={zonaEfectiva} msgZona={msgZona} sugerenciasCiudad={sugerenciasCiudad}
         form={form} setForm={setForm} pago={pago} setPago={setPago}
         enviando={enviando} error={error} okMsg={okMsg} onPedir={onPedir} payuEnv={payuEnv} mpEnv={mpEnv} />
     </div>

@@ -77,6 +77,8 @@ export async function crearPedido({ customer, items, payment, notes, uid = null,
   if (!customer?.name?.trim()) throw new Error("Cuéntanos tu nombre para el pedido.");
   if (!customer?.phone?.trim()) throw new Error("Déjanos tu teléfono / WhatsApp para coordinar la entrega.");
   if (!customer?.address?.trim()) throw new Error("Indícanos la dirección de entrega.");
+  if (!customer?.ciudad?.trim()) throw new Error("Indícanos la ciudad.");
+  if (!customer?.depto?.trim()) throw new Error("Indícanos el departamento.");
 
   const subtotal = limpios.reduce((a, i) => a + i.qty * i.unitPrice, 0);
   const envio = Math.max(0, Math.round(Number(shipping?.cost) || 0));
@@ -89,6 +91,8 @@ export async function crearPedido({ customer, items, payment, notes, uid = null,
       name: customer.name.trim(),
       phone: String(customer.phone || "").trim(),
       address: String(customer.address || "").trim(),
+      ciudad: String(customer.ciudad || "").trim(),
+      depto: String(customer.depto || "").trim(),
     },
     items: limpios,
     subtotal,
@@ -136,7 +140,9 @@ export function mensajeWhatsApp({ customer, items, subtotal, total, shipping, pa
       `Total: $${Number(total).toLocaleString("es-CO")} (${payment})\n` +
       `Nombre: ${customer.name}\n` +
       `Tel: ${customer.phone}\n` +
-      `Dirección: ${customer.address}` +
+      `Dirección: ${customer.address}\n` +
+      `Ciudad: ${customer.ciudad || ""}\n` +
+      `Depto: ${customer.depto || ""}` +
       (customer.notes ? `\nNota: ${customer.notes}` : "")
   );
 }
