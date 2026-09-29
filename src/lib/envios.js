@@ -52,8 +52,7 @@ export function zonaPorId(zonas, id) {
   return (zonas || []).find((z) => z.id === id) || null;
 }
 
-// 32 departamentos de Colombia (lista curada, sin APIs externas).
-export const DEPARTAMENTOS = [
+// 32 departamentos de Colombia (lista curada, sin APIs externas).export const DEPARTAMENTOS = [
   "Amazonas", "Antioquia", "Arauca", "Atlántico", "Bolívar", "Boyacá",
   "Caldas", "Caquetá", "Casanare", "Cauca", "Cesar", "Chocó",
   "Córdoba", "Cundinamarca", "Guainía", "Guaviare", "Huila", "La Guajira",
@@ -61,6 +60,25 @@ export const DEPARTAMENTOS = [
   "Risaralda", "San Andrés y Providencia", "Santander", "Sucre", "Tolima",
   "Valle del Cauca", "Vaupés", "Vichada",
 ];
+
+// Ciudad → departamento (claves normalizadas, sin tildes).
+export const DEPTO_POR_CIUDAD = {
+  barranquilla: "Atlántico",
+  soledad: "Atlántico",
+  "puerto colombia": "Atlántico",
+  malambo: "Atlántico",
+  cartagena: "Bolívar",
+  mompox: "Bolívar",
+  "santa marta": "Magdalena",
+  bogota: "Cundinamarca",
+  cali: "Valle del Cauca",
+  medellin: "Antioquia",
+  bucaramanga: "Santander",
+};
+
+export function deptoDeCiudad(ciudad) {
+  return DEPTO_POR_CIUDAD[normalizarTexto(ciudad)] || "";
+}
 
 // Normaliza texto para comparar: minúsculas + sin tildes + espacios simples.
 export function normalizarTexto(texto) {

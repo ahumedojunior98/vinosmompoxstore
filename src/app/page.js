@@ -19,7 +19,7 @@ import {
   CATEGORIAS, METODOS_PAGO, WHATSAPP_NUMBER, PAGO_MP, PAGO_PAYU,
   subscribeCatalogo, crearPedido, mensajeWhatsApp,
 } from "@/lib/tienda";
-import { subscribeZonas, zonasActivas, calcularEnvio, zonaPorId, detectarZona, DEPARTAMENTOS } from "@/lib/envios";
+import { subscribeZonas, zonasActivas, calcularEnvio, zonaPorId, detectarZona, DEPARTAMENTOS, deptoDeCiudad } from "@/lib/envios";
 
 /* ---------- Reveal on scroll ---------- */
 function useReveal(deps = []) {
@@ -544,7 +544,7 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
                 <label className="text-[11px] font-extrabold uppercase tracking-wider">Dirección *<input className="input-relieve mt-1 normal-case" placeholder="Barrio, calle, referencia…" value={form.dir} onChange={(e) => setForm({ ...form, dir: e.target.value })} /></label>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="text-[11px] font-extrabold uppercase tracking-wider">Ciudad *<input className="input-relieve mt-1 normal-case" placeholder="Ej: Barranquilla" list="vm-ciudades" value={form.ciudad || ""} onChange={(e) => setForm({ ...form, ciudad: e.target.value })} /></label>
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider">Departamento *<select className="input-relieve mt-1 normal-case cursor-pointer" value={form.depto || ""} onChange={(e) => setForm({ ...form, depto: e.target.value })}>
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider">Departamento *<select className="input-relieve mt-1 normal-case cursor-pointer" value={form.depto || ""} onChange={(e) => { deptoAutoRef.current = false; setForm({ ...form, depto: e.target.value }); }}>
                     <option value="">— Elige —</option>
                     {DEPARTAMENTOS.map((d) => <option key={d} value={d}>{d}</option>)}
                   </select></label>
@@ -805,6 +805,19 @@ export default function Tienda() {
 
   // Detección automática: al escribir dirección, ciudad o departamento se
   // detecta la zona y el precio al instante. Sin selector manual.
+  // Al elegir/escribir la ciudad se autocompleta el departamento.
+  // Si el usuario lo cambia a mano, se respeta su elección.
+  const deptoAutoRef = useRef(false);
+  useEffect(() => {
+    const d = deptoDeCiudad(form.ciudad);
+    if (d) {
+      deptoAutoRef.current = true;
+      setForm((f) => (f.depto === d ? f : { ...f, depto: d }));
+    } else if (deptoAutoRef.current) {
+      deptoAutoRef.current = false;
+      setForm((f) => ({ ...f, depto: "" }));
+    }
+  }, [form.ciudad]);
   const textoDestino = useMemo(
     () => [form.dir, form.ciudad, form.depto].filter(Boolean).join(" "),
     [form.dir, form.ciudad, form.depto]
