@@ -105,11 +105,12 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
                 🔑 {entrando ? "…" : "Entrar"}
               </button>
             )}
-            <button onClick={onOpenCart} className="btn-relieve btn-vino btn-shine px-4 py-2.5 text-sm flex items-center gap-2 cursor-pointer">
-              <ShoppingBasket size={17} />
-              <span className="hidden sm:inline">Canasta</span>
-              <span key={bumpKey} className={bumpKey > 0 ? "anim-bump inline-flex items-center justify-center min-w-6 h-6 px-1 text-xs font-black rounded-full" : "inline-flex items-center justify-center min-w-6 h-6 px-1 text-xs font-black rounded-full"}
-                style={{ background: "#f0d48a", color: "#3d2b1f", border: "2px solid #3d2b1f" }}>{cartCount}</span>
+            <button onClick={onOpenCart} aria-label={`Abrir canasta (${cartCount})`} className="canasta-min relative flex items-center justify-center w-11 h-11 cursor-pointer shrink-0">
+              <ShoppingBasket size={19} />
+              {cartCount > 0 ? (
+                <span key={bumpKey} className={bumpKey > 0 ? "anim-bump absolute -top-1 -right-1 flex items-center justify-center min-w-5 h-5 px-1 text-[11px] font-black rounded-full" : "absolute -top-1 -right-1 flex items-center justify-center min-w-5 h-5 px-1 text-[11px] font-black rounded-full"}
+                  style={{ background: "#b3402a", color: "#fff8ea", border: "2px solid #fffdf6" }}>{cartCount}</span>
+              ) : null}
             </button>
           </div>
           {fbUser ? (
