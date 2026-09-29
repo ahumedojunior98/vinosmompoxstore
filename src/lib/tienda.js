@@ -27,9 +27,7 @@ export const CATEGORIAS = [
 export const METODOS_PAGO = ["Mercado Pago", "Nequi", "Efectivo", "Transferencia", "Daviplata", "Otro"];
 
 // Método de pago en línea (Checkout Pro). Lo demás sigue por WhatsApp.
-// PayU se conserva como alternativa (PAGO_PAYU) pero ya no se ofrece en la UI.
 export const PAGO_MP = "Mercado Pago";
-export const PAGO_PAYU = "PayU";
 
 // Cambia este número por tu WhatsApp real (código país + número, sin + ni espacios)
 export const WHATSAPP_NUMBER = "573001234567";
@@ -64,7 +62,7 @@ export function subscribeCatalogo(callback, onError) {
   );
 }
 
-export async function crearPedido({ customer, items, payment, notes, uid = null, userEmail = "", shipping = null }) {
+export async function crearPedido({ customer, items, payment, notes, consentimientos = null, uid = null, userEmail = "", shipping = null }) {
   const limpios = (items || [])
     .filter((i) => i.productId && (Number(i.qty) || 0) > 0)
     .map((i) => ({
@@ -79,6 +77,9 @@ export async function crearPedido({ customer, items, payment, notes, uid = null,
   if (!customer?.address?.trim()) throw new Error("Indícanos la dirección de entrega.");
   if (!customer?.ciudad?.trim()) throw new Error("Indícanos la ciudad.");
   if (!customer?.depto?.trim()) throw new Error("Indícanos el departamento.");
+  if (!consentimientos?.datos || !consentimientos?.mayorEdad) {
+    throw new Error("Acepta el tratamiento de datos y confirma que tienes 18 años o más.");
+  }
 
   const subtotal = limpios.reduce((a, i) => a + i.qty * i.unitPrice, 0);
   const envio = Math.max(0, Math.round(Number(shipping?.cost) || 0));
@@ -108,6 +109,12 @@ export async function crearPedido({ customer, items, payment, notes, uid = null,
     notes: String(notes || "").trim(),
     status: "pendiente",
     origen: "tienda-web",
+    // Prueba de consentimiento (Ley 1581 + Ley 124): datos + 18 años.
+    consentimientos: {
+      datos: true,
+      mayorEdad: true,
+      fecha: String(consentimientos?.fecha || new Date().toISOString()),
+    },
     // Trazabilidad del usuario (null si pidió como invitado)
     uid: uid || null,
     userEmail: String(userEmail || ""),

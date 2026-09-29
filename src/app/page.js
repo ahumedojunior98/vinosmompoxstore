@@ -15,8 +15,9 @@ import {
   useSesion, loginConGoogle, salir,
   leerCarritoNube, guardarCarritoNube, subscribeCarrito, registrarCompraUsuario,
 } from "@/lib/auth";
+import { CookieBanner, AgeGate } from "@/components/Legal";
 import {
-  CATEGORIAS, METODOS_PAGO, WHATSAPP_NUMBER, PAGO_MP, PAGO_PAYU,
+  CATEGORIAS, METODOS_PAGO, WHATSAPP_NUMBER, PAGO_MP,
   subscribeCatalogo, crearPedido, mensajeWhatsApp,
 } from "@/lib/tienda";
 import { subscribeZonas, zonasActivas, calcularEnvio, zonaPorId, detectarZona, DEPARTAMENTOS, deptoDeCiudad } from "@/lib/envios";
@@ -90,12 +91,8 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
             </div>
           </div>
           <a href="#top" className="flex justify-center group" aria-label="Vino Mompox - inicio">
-            <span className="relative flex items-center h-[68px] px-3.5 shrink-0 transition-transform group-hover:-rotate-2"
-              style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)", border: "2px solid #3d2b1f", borderRadius: "1rem", boxShadow: "3px 3px 0 #3d2b1f" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-14 w-auto" />
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px]" style={{ background: "#f0d48a", border: "2px solid #3d2b1f", borderRadius: "999px" }}>★</span>
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-16 w-auto transition-transform group-hover:-rotate-2 drop-shadow-[2px_2px_0_rgba(61,43,31,0.9)]" />
           </a>
           <div className="flex items-center justify-end gap-2">
             {fbUser ? (
@@ -508,7 +505,7 @@ function CarruselDestacados({ items, cart, onAdd, onMore, onLess }) {
   );
 }
 
-function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, onClear, subtotal, envio, total, zona, msgZona, sugerenciasCiudad, form, setForm, pago, setPago, enviando, error, okMsg, onPedir, payuEnv, mpEnv }) {
+function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, onClear, subtotal, envio, total, zona, msgZona, sugerenciasCiudad, form, setForm, pago, setPago, enviando, error, okMsg, onPedir, mpEnv }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
@@ -564,7 +561,7 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
               <div id="pedido" className="relieve p-4 flex flex-col gap-3" style={{ background: "linear-gradient(180deg,#fffdf6,#faf0d8)" }}>
                 <p className="font-display font-black text-xl flex items-center gap-2" style={{ color: "#4a0f1a" }}><PackageCheck size={20} /> Datos de entrega</p>
                 <label className="text-[11px] font-extrabold uppercase tracking-wider">Nombre *<input className="input-relieve mt-1 normal-case" placeholder="Ej: Doña Carmen" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} /></label>
-                {pago === PAGO_PAYU || pago === PAGO_MP ? (
+                {pago === PAGO_MP ? (
                   <label className="text-[11px] font-extrabold uppercase tracking-wider">Correo *<input type="email" className="input-relieve mt-1 normal-case" placeholder="tucorreo@ejemplo.com" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
                 ) : null}
                 <div className="grid grid-cols-2 gap-2">
@@ -597,6 +594,14 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
                   )}
                 </div>
                 <label className="text-[11px] font-extrabold uppercase tracking-wider">Nota (opcional)<input className="input-relieve mt-1 normal-case" placeholder="Ej: es para regalo…" value={form.nota} onChange={(e) => setForm({ ...form, nota: e.target.value })} /></label>
+                <label className="flex items-start gap-2 text-[12px] font-semibold cursor-pointer">
+                  <input type="checkbox" className="mt-0.5 w-4 h-4 shrink-0 accent-[#7a1e2b]" checked={!!form.aceptaDatos} onChange={(e) => setForm({ ...form, aceptaDatos: e.target.checked })} aria-required="true" />
+                  <span>Acepto el tratamiento de mis datos según la <a href="/privacidad" target="_blank" rel="noreferrer" className="underline font-bold">Política de privacidad</a> *</span>
+                </label>
+                <label className="flex items-start gap-2 text-[12px] font-semibold cursor-pointer">
+                  <input type="checkbox" className="mt-0.5 w-4 h-4 shrink-0 accent-[#7a1e2b]" checked={!!form.confirmaEdad} onChange={(e) => setForm({ ...form, confirmaEdad: e.target.checked })} aria-required="true" />
+                  <span>Confirmo que tengo 18 años o más (ver <a href="/terminos" target="_blank" rel="noreferrer" className="underline font-bold">Términos</a>) *</span>
+                </label>
                 {error ? <p className="text-[13px] font-bold px-3 py-2 relieve-suave anim-pop" style={{ background: "#fbe3df", borderColor: "#7a1e2b" }}>⚠️ {error}</p> : null}
                 {okMsg ? <p className="text-[13px] font-bold px-3 py-2 relieve-suave anim-pop" style={{ background: "#ddf0da", borderColor: "#2e6b4f" }}>{okMsg}</p> : null}
               </div>
@@ -610,23 +615,17 @@ function CartDrawer({ open, onClose, cart, productos, onMore, onLess, onRemove, 
             <div className="flex justify-between items-center"><span className="font-display font-bold text-xl">Total</span><span className="font-display font-black text-3xl" style={{ color: "#7a1e2b" }}>{formatCOP(total)}</span></div>
             <button onClick={onPedir} disabled={enviando} className="btn-relieve btn-palma btn-shine w-full py-3.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 text-[15px]">
               <Send size={16} /> {enviando
-                ? (pago === PAGO_MP ? "Conectando con Mercado Pago…" : pago === PAGO_PAYU ? "Conectando con PayU…" : "Guardando tu pedido…")
+                ? (pago === PAGO_MP ? "Conectando con Mercado Pago…" : "Guardando tu pedido…")
                 : (pago === PAGO_MP
                   ? (mpEnv === "production" ? "💳 Pagar con Mercado Pago" : "💳 Pagar con Mercado Pago (prueba)")
-                  : pago === PAGO_PAYU
-                    ? (payuEnv === "production" ? "💳 Pagar con PayU" : "💳 Pagar con PayU (prueba)")
-                    : "Confirmar por WhatsApp")}
+                  : "Confirmar por WhatsApp")}
             </button>
             <p className="text-[11px] font-semibold opacity-60 text-center">
               {pago === PAGO_MP
                 ? (mpEnv === "production"
                   ? "Pago seguro con Mercado Pago. Se crea tu orden y vas al checkout seguro."
                   : "Ambiente de PRUEBAS de Mercado Pago: ningún cobro es real. Se crea tu orden y vas al checkout seguro.")
-                : pago === PAGO_PAYU
-                  ? (payuEnv === "production"
-                    ? "Pago seguro con PayU. Se crea tu orden y vas al checkout seguro."
-                    : "Ambiente de PRUEBAS de PayU: ningún cobro es real. Se crea tu orden y vas al checkout seguro.")
-                  : `Se guarda en la tienda y se abre WhatsApp. Pago: ${pago}.`}
+                : `Se guarda en la tienda y se abre WhatsApp. Pago: ${pago}.`}
             </p>
           </div>
         ) : null}
@@ -645,14 +644,13 @@ export default function Tienda() {
   const [cart, setCart] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
   const [bumpKey, setBumpKey] = useState(0);
-  const [form, setForm] = useState({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "" });
+  const [form, setForm] = useState({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "", aceptaDatos: false, confirmaEdad: false });
   const [pago, setPago] = useState("Nequi");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
   const [okMsg, setOkMsg] = useState("");
   const [entrando, setEntrando] = useState(false);
   const [errorLogin, setErrorLogin] = useState("");
-  const [payuEnv, setPayuEnv] = useState("sandbox");
   const [mpEnv, setMpEnv] = useState("sandbox");
   const [zonas, setZonas] = useState([]);
   const [zonaId, setZonaId] = useState("");
@@ -677,14 +675,9 @@ export default function Tienda() {
     return () => unsub && unsub();
   }, []);
 
-  // Entornos de pago efectivos (solo rótulos; el cobro real lo define el servidor).
+  // Entorno de pago efectivo (solo rótulo; el cobro real lo define el servidor).
   useEffect(() => {
     (async () => {
-      try {
-        const r = await fetch("/api/payu/config-publica", { cache: "no-store" });
-        const d = await r.json().catch(() => ({}));
-        if (d?.env === "production") setPayuEnv("production");
-      } catch { /* rótulo sandbox por defecto */ }
       try {
         const r = await fetch("/api/mp/config-publica", { cache: "no-store" });
         const d = await r.json().catch(() => ({}));
@@ -891,6 +884,16 @@ export default function Tienda() {
     return true;
   }
 
+  function exigirConsentimientos() {
+    if (!form.aceptaDatos) { setError("Acepta el tratamiento de tus datos (ver Privacidad) para continuar."); return false; }
+    if (!form.confirmaEdad) { setError("Confirma que tienes 18 años o más. No vendemos alcohol a menores."); return false; }
+    return true;
+  }
+
+  function datosConsentimiento() {
+    return { datos: true, mayorEdad: true, fecha: new Date().toISOString() };
+  }
+
   function addToCart(id, delta = 1) {
     const p = productos.find((x) => x.id === id);
     const stock = Number(p?.stock) || 0;
@@ -910,9 +913,8 @@ export default function Tienda() {
     setCart((prev) => { const n = { ...prev }; delete n[id]; return n; });
   }
 
-  // Flujo PayU WebCheckout: crea orden interna (pending) y redirige al checkout oficial.
-  // Solo se envían productId + qty: el total lo calcula el servidor desde Firestore.
-  // La canasta NO se limpia aquí: si el pago falla o se abandona, sigue intacta.
+  // Compra solo con sesión: si no hay usuario, se abre Google y se pide
+  // confirmar de nuevo (nunca se auto-envía un pago tras el popup).
   async function exigirSesion() {
     if (fbUser) return true;
     setError("🔑 Para comprar, entra primero con Google. Luego confirma tu pedido de nuevo.");
@@ -920,47 +922,6 @@ export default function Tienda() {
       await onLogin();
     } catch { /* el mensaje de error de login ya se muestra */ }
     return false;
-  }
-
-  async function onPagarPayU() {
-    setError(""); setOkMsg("");
-    if (!(await exigirSesion())) return;
-    if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
-    if (!exigirZona()) return;
-    setEnviando(true);
-    try {
-      const res = await fetch("/api/payu/crear-orden", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto, email: form.email },
-          items: detalleCart.map(({ productId, qty }) => ({ productId, qty })),
-          ...shippingPayload(),
-          notes: form.nota,
-          uid: fbUser?.uid || null,
-          userEmail: perfil?.email || fbUser?.email || "",
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) throw new Error(data.error || "No pude iniciar el pago con PayU.");
-      setOkMsg(`✅ Orden ${data.reference} creada (${formatCOP(data.total)}). Abriendo PayU…`);
-      const f = document.createElement("form");
-      f.method = "POST";
-      f.action = data.gatewayUrl;
-      for (const [k, v] of Object.entries(data.formData || {})) {
-        const inp = document.createElement("input");
-        inp.type = "hidden";
-        inp.name = k;
-        inp.value = String(v);
-        f.appendChild(inp);
-      }
-      document.body.appendChild(f);
-      f.submit();
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setEnviando(false);
-    }
   }
 
   // Flujo Mercado Pago Checkout Pro: crea orden interna (pending) + preferencia
@@ -972,6 +933,7 @@ export default function Tienda() {
     if (!(await exigirSesion())) return;
     if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
     if (!exigirZona()) return;
+    if (!exigirConsentimientos()) return;
     setEnviando(true);
     try {
       const res = await fetch("/api/mp/crear-preferencia", {
@@ -982,6 +944,7 @@ export default function Tienda() {
           items: detalleCart.map(({ productId, qty }) => ({ productId, qty })),
           ...shippingPayload(),
           notes: form.nota,
+          consentimientos: datosConsentimiento(),
           uid: fbUser?.uid || null,
           userEmail: perfil?.email || fbUser?.email || "",
         }),
@@ -999,11 +962,11 @@ export default function Tienda() {
 
   async function onPedir() {
     if (pago === PAGO_MP) return onPagarMP();
-    if (pago === PAGO_PAYU) return onPagarPayU();
     setError(""); setOkMsg("");
     if (!(await exigirSesion())) return;
     if (detalleCart.length === 0) { setError("Tu canasta está vacía."); return; }
     if (!exigirZona()) return;
+    if (!exigirConsentimientos()) return;
     setEnviando(true);
     try {
       const ship = shippingPayload().shipping;
@@ -1012,6 +975,7 @@ export default function Tienda() {
         items: detalleCart,
         payment: pago,
         notes: form.nota,
+        consentimientos: datosConsentimiento(),
         uid: fbUser?.uid || null,
         userEmail: perfil?.email || fbUser?.email || "",
         shipping: ship,
@@ -1023,7 +987,7 @@ export default function Tienda() {
         customer: { name: form.nombre, phone: form.tel, address: form.dir, ciudad: form.ciudad, depto: form.depto, notes: form.nota },
         items: detalleCart, subtotal, total, shipping: ship, payment: pago, pedidoId,
       });
-      setCart({}); setForm({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "" }); setZonaId("");
+      setCart({}); setForm({ nombre: "", tel: "", dir: "", ciudad: "", depto: "", nota: "", email: "", aceptaDatos: false, confirmaEdad: false }); setZonaId("");
       setTimeout(() => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank"), 800);
     } catch (e) {
       setError(e.message);
@@ -1036,6 +1000,8 @@ export default function Tienda() {
 
   return (
     <div id="top" ref={rootRef} className="min-h-screen">
+      <AgeGate />
+      <CookieBanner />
       <Anuncio />
       <Header cartCount={cartCount} bumpKey={bumpKey} onOpenCart={() => setCartOpen(true)}
         sesion={sesion} entrando={entrando} onLogin={onLogin} onLogout={onLogout} />
@@ -1047,7 +1013,7 @@ export default function Tienda() {
         </div>
       ) : null}
 
-      <div className="mx-auto max-w-6xl px-3 sm:px-5 py-5 flex flex-col gap-6">
+      <div className="mx-auto max-w-6xl px-3 sm:px-5 py-5 flex flex-col gap-6" id="contenido">
         <Hero totalVinos={productos.length} ofertas={ofertas}
           onVerCatalogo={() => scrollTo("catalogo")} onVerCombos={() => scrollTo("combos")} />
 
@@ -1262,8 +1228,13 @@ export default function Tienda() {
             <p className="mt-1 flex items-center gap-1.5"><Truck size={14} color="#f0d48a" /> Entrega coordinada</p>
           </div>
         </div>
-        <div className="text-center text-[11.5px] font-semibold pb-6 px-4 flex flex-col gap-1" style={{ color: "#8a7a5a" }}>
+        <div className="text-center text-[12px] font-semibold pb-6 px-4 flex flex-col gap-1" style={{ color: "#b3a284" }}>
           <span>Hecho a mano en Santa Cruz de Mompox · Vino Mompox 🍷</span>
+          <span className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+            <a href="/privacidad" className="underline hover:text-[#ffe9a8]">Privacidad</a>
+            <a href="/terminos" className="underline hover:text-[#ffe9a8]">Términos y ventas</a>
+            <a href="/cookies" className="underline hover:text-[#ffe9a8]">Cookies</a>
+          </span>
           <span>El exceso de alcohol es perjudicial para la salud · Prohíbese la venta a menores de edad</span>
         </div>
       </footer>
@@ -1288,7 +1259,7 @@ export default function Tienda() {
         onRemove={removeFromCart} onClear={() => setCart({})}
         subtotal={subtotal} envio={envio} total={total} zona={zonaEfectiva} msgZona={msgZona} sugerenciasCiudad={sugerenciasCiudad}
         form={form} setForm={setForm} pago={pago} setPago={setPago}
-        enviando={enviando} error={error} okMsg={okMsg} onPedir={onPedir} payuEnv={payuEnv} mpEnv={mpEnv} />
+        enviando={enviando} error={error} okMsg={okMsg} onPedir={onPedir} mpEnv={mpEnv} />
     </div>
   );
 }

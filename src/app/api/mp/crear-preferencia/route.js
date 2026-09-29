@@ -45,6 +45,19 @@ export async function POST(req) {
   if (!direccion) return error(400, "Falta la dirección de entrega.");
   if (!ciudad) return error(400, "Falta la ciudad.");
   if (!depto) return error(400, "Falta el departamento.");
+  // Consentimientos obligatorios (Ley 1581 + Ley 124): el front los exige,
+  // el servidor los revalida y los guarda como prueba en la orden.
+  const cons = body.consentimientos || {};
+  if (!cons.datos || !cons.mayorEdad) {
+    return error(400, "Falta aceptar el tratamiento de datos y confirmar la mayoría de edad.");
+  }
+  const consentimientos = {
+    datos: true,
+    mayorEdad: true,
+    fecha: String(cons.fecha || new Date().toISOString()),
+  };
+  if (!ciudad) return error(400, "Falta la ciudad.");
+  if (!depto) return error(400, "Falta el departamento.");
   if (!esEmailValidoMp(email)) return error(400, "Se necesita un correo válido para pagar con Mercado Pago.");
   if (itemsRaw.length === 0) return error(400, "La canasta está vacía.");
   if (itemsRaw.length > MAX_LINEAS) return error(400, "Demasiadas líneas en la orden.");
@@ -158,6 +171,7 @@ export async function POST(req) {
       payment: "Mercado Pago",
       paymentState: "pending",
       notes,
+      consentimientos,
       status: "pendiente",
       uid: uid || null,
       userEmail: userEmail || "",
