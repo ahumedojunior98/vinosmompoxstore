@@ -77,7 +77,7 @@ function Header({ cartCount, bumpKey, onOpenCart, sesion, entrando, onLogin, onL
             <span className="relative flex items-center h-[52px] px-2.5 shrink-0 transition-transform group-hover:-rotate-2"
               style={{ background: "linear-gradient(180deg,#fffdf6,#f7ead0)", border: "2px solid #3d2b1f", borderRadius: "1rem", boxShadow: "3px 3px 0 #3d2b1f" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-vino-mompox-foto.jpg" alt="Vino Mompox" className="h-10 w-auto rounded-lg object-cover" />
+              <img src="/logo-vino-mompox.png" alt="Vino Mompox" className="h-10 w-auto" />
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px]" style={{ background: "#f0d48a", border: "2px solid #3d2b1f", borderRadius: "999px" }}>★</span>
             </span>
             <span>
@@ -1148,8 +1148,8 @@ export default function Tienda() {
 
         {/* Cómo pedir */}
         <section id="pedido" className="relieve-suave p-6 sm:p-7 reveal scroll-mt-28" style={{ background: "linear-gradient(180deg,#fffdf6,#faf0d8)" }}>
-          <h2 className="font-display font-black text-3xl mb-1" style={{ color: "#4a0f1a" }}>Pedir es <span className="italic" style={{ color: "#b3402a" }}>facilito</span> 🧾</h2>
-          <p className="text-sm font-semibold opacity-70 mb-4">Sin registro obligatorio, sin enredos. Como pedirle al vecino. {fbUser ? "🔑 Entraste con Google: tu canasta se guarda en la nube." : "💡 Si entras con Google, tu canasta te sigue en cualquier dispositivo."}</p>
+          <h2 className="font-display font-black text-3xl sm:text-4xl mb-1 text-center" style={{ color: "#4a0f1a" }}>Pedir es <span className="italic" style={{ color: "#b3402a" }}>facilito</span> 🧾</h2>
+          <p className="text-sm font-semibold opacity-70 mb-5 text-center max-w-2xl mx-auto">Sin registro obligatorio, sin enredos. Como pedirle al vecino. {fbUser ? "🔑 Entraste con Google: tu canasta se guarda en la nube." : "💡 Si entras con Google, tu canasta te sigue en cualquier dispositivo."}</p>
           <ol className="grid sm:grid-cols-3 gap-3">
             {[
               { n: "1", t: "Arma tu canasta 🧺", d: "Agrega vinos y combos. Todo se guarda solo." },
@@ -1163,13 +1163,13 @@ export default function Tienda() {
               </li>
             ))}
           </ol>
-          <div className="mt-5 flex flex-wrap gap-3 items-center">
-            <button onClick={() => setCartOpen(true)} className="btn-relieve btn-vino btn-shine px-6 py-3 text-sm cursor-pointer flex items-center gap-2">
-              <ShoppingBasket size={16} /> Abrir mi canasta ({cartCount})
+          <div className="mt-6 flex flex-wrap gap-3 items-center justify-center">
+            <button onClick={() => setCartOpen(true)} className="btn-relieve btn-vino btn-shine px-7 py-3.5 text-[15px] cursor-pointer flex items-center gap-2 font-extrabold">
+              <ShoppingBasket size={17} /> Abrir mi canasta ({cartCount})
             </button>
             <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola 🍷 quiero info de los Vinos Mompox")}`} target="_blank" rel="noreferrer"
-              className="btn-relieve btn-palma px-6 py-3 text-sm cursor-pointer flex items-center gap-2">
-              <MessageCircle size={16} /> Hablar por WhatsApp
+              className="btn-relieve btn-palma px-7 py-3.5 text-[15px] cursor-pointer flex items-center gap-2 font-extrabold">
+              <MessageCircle size={17} /> Hablar por WhatsApp
             </a>
           </div>
         </section>
