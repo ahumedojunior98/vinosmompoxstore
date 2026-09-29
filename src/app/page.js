@@ -193,10 +193,18 @@ function Hero({ totalVinos, ofertas, onVerCatalogo, onVerCombos }) {
     <section ref={sectionRef} onPointerMove={onPointerMove} className="relieve overflow-hidden">
       <div className="cenefa" />
       <div className="relative px-5 sm:px-10 pt-10 sm:pt-14 pb-8 grid lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center overflow-hidden" style={{ background: "#22060d" }}>
-        {/* Foto real — banner principal */}
+        {/* Video mango pour — fondo del banner principal */}
         <motion.div style={{ x: fondoX, scale: 1.06 }} className="pointer-events-none absolute inset-0" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-vino-mompox-foto.jpg" alt="" className="ken-burns h-full w-full object-cover" />
+          <video
+            className="h-full w-full object-cover"
+            src="/hero-mango-pour.mp4"
+            poster="/logo-vino-mompox-foto.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
         </motion.div>
         {/* Scrims para legibilidad */}
         <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(100deg, rgba(28,5,10,0.95) 0%, rgba(34,6,13,0.85) 38%, rgba(74,15,26,0.5) 65%, rgba(74,15,26,0.3) 100%)" }} />
