@@ -30,7 +30,7 @@ export const METODOS_PAGO = ["Mercado Pago", "Nequi", "Efectivo", "Transferencia
 export const PAGO_MP = "Mercado Pago";
 
 // Cambia este número por tu WhatsApp real (código país + número, sin + ni espacios)
-export const WHATSAPP_NUMBER = "573001234567";
+export const WHATSAPP_NUMBER = "573177764722";
 
 const COLLECTION = "products";
 const ORDERS = "orders";
